@@ -201,7 +201,7 @@ export default class Home extends Component {
                 <ResponsiveContainer height={400}>
                   <LineChart
                     data={this.getGraphData()}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
                   >
                     <XAxis
                       dataKey="name"
