@@ -1,6 +1,7 @@
 import { h, Component } from 'preact'
 import { Router } from 'preact-router'
 
+import Disclaimer from './disclaimer'
 import Header from './header'
 import Home from '../routes/home'
 
@@ -12,6 +13,7 @@ export default class App extends Component {
         <Router>
           <Home path="/" />
         </Router>
+        <Disclaimer />
       </div>
     )
   }
