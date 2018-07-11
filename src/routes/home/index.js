@@ -25,6 +25,7 @@ export default class Home extends Component {
   componentDidMount() {
     this.setState({
       fees: localStorage.getItem('fees') || 5.0,
+      ownNodes: localStorage.getItem('ownNodes') || 1,
       nodes: localStorage.getItem('nodes'),
       tntPrice: localStorage.getItem('tntPrice'),
       graphData: JSON.parse(localStorage.getItem('graphData') || '[]')
@@ -127,14 +128,14 @@ export default class Home extends Component {
       price -= this.getRewardMonths(true) * this.state.fees
     }
 
-    return this.roundPrice(price)
+    return this.roundPrice(this.state.ownNodes * price)
   }
 
   getMonthlyProfit() {
     return this.roundPrice(this.getRewardValue(true) / this.getRewardMonths())
   }
 
-  render({}, { rightAxisDomain, nodes, fees, tntPrice }) {
+  render({}, { rightAxisDomain, nodes, fees, tntPrice, ownNodes }) {
     return (
       <div class={style.home}>
         <LayoutGrid>
@@ -153,25 +154,40 @@ export default class Home extends Component {
                 onInput={linkState(this, 'tntPrice')}
               />
               <TextField
-                label="Amount of nodes"
+                label="Active nodes"
                 type="number"
                 step="1"
                 value={nodes}
                 onInput={linkState(this, 'nodes')}
               />
-              <TextField
-                label="Hosting fees per month (USD)"
-                type="number"
-                step="0.01"
-                value={fees}
-                onInput={linkState(this, 'fees')}
-              />
+
+              <div style={{ 'margin-top': '20px' }}>
+                <TextField
+                  label="Hosting fees per month (USD)"
+                  type="number"
+                  step="0.01"
+                  value={fees}
+                  onInput={linkState(this, 'fees')}
+                />
+                <TextField
+                  label="Your amount of nodes"
+                  type="number"
+                  step="1"
+                  value={ownNodes}
+                  onInput={linkState(this, 'ownNodes')}
+                />
+              </div>
 
               <div style={{ 'margin-top': '20px' }}>
                 <TextField
                   disabled={true}
                   label="Time before reward *"
                   value={`${this.getRewardDays(nodes)} days`}
+                />
+                <TextField
+                  disabled={true}
+                  label="Node value"
+                  value={this.roundPrice(ownNodes * 5000 * tntPrice)}
                 />
                 <TextField
                   disabled={true}
@@ -198,7 +214,7 @@ export default class Home extends Component {
               align="middle"
             >
               <div style={{ 'margin-top': '20px' }}>
-                <ResponsiveContainer height={400}>
+                <ResponsiveContainer height={500}>
                   <LineChart
                     data={this.getGraphData()}
                     margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
