@@ -236,6 +236,7 @@ export default class Home extends Component {
                       dot={false}
                       yAxisId="right"
                       unit=" days"
+                      strokeWidth={0}
                     />
                   </LineChart>
                 </ResponsiveContainer>
