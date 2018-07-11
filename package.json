@@ -1,0 +1,25 @@
+{
+  "private": true,
+  "name": "tnt-solutions-frontend",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
+    "build": "preact build",
+    "serve": "preact build && preact serve",
+    "dev": "preact watch",
+    "prettier": "prettier -l **/*.js",
+    "prettier:write": "prettier --write **/*.js"
+  },
+  "devDependencies": {
+    "if-env": "^1.0.0",
+    "preact-cli": "^2.0.0",
+    "prettier": "^1.13.7"
+  },
+  "dependencies": {
+    "linkstate": "^1.1.1",
+    "preact": "^8.2.1",
+    "preact-material-components": "^1.4.7",
+    "recharts": "^1.0.1"
+  }
+}

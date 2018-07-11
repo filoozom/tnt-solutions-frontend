@@ -1,0 +1,12 @@
+.home {
+  padding: 20px;
+  min-height: 100%;
+  width: 100%;
+}
+
+.home
+  :global
+  .mdc-text-field.mdc-text-field--upgraded:not(.mdc-text-field--fullwidth):not(.mdc-text-field--box) {
+  width: 100%;
+  margin-top: 0;
+}
