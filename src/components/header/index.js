@@ -11,7 +11,7 @@ export default class Header extends Component {
         <Toolbar className="toolbar">
           <Toolbar.Row>
             <Toolbar.Section align-start>
-              <Toolbar.Title>Tierion calculator</Toolbar.Title>
+              <Toolbar.Title>Chainpoint Node Calculator</Toolbar.Title>
             </Toolbar.Section>
             <Toolbar.Section align-end className={style['toolbar-right']}>
               <a href="https://github.com/filoozom/tnt-solutions-frontend">

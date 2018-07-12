@@ -147,7 +147,7 @@ export default class Home extends Component {
               align="middle"
             >
               <TextField
-                label="TNT price"
+                label="TNT price (USD)"
                 type="number"
                 step="0.000001"
                 value={tntPrice}
@@ -170,7 +170,7 @@ export default class Home extends Component {
                   onInput={linkState(this, 'fees')}
                 />
                 <TextField
-                  label="Your amount of nodes"
+                  label="Your number of nodes"
                   type="number"
                   step="1"
                   value={ownNodes}
@@ -181,30 +181,32 @@ export default class Home extends Component {
               <div style={{ 'margin-top': '20px' }}>
                 <TextField
                   disabled={true}
-                  label="Time before reward *"
+                  label="Estimated time to reward *"
                   value={`${this.getRewardDays(nodes)} days`}
                 />
                 <TextField
                   disabled={true}
-                  label="Node value"
+                  label="Node stacking value (USD)"
                   value={this.roundPrice(ownNodes * 5000 * tntPrice)}
                 />
                 <TextField
                   disabled={true}
-                  label="Expected income *"
+                  label="Estimated reward value (USD) *"
                   value={this.getRewardValue()}
                 />
                 <TextField
                   disabled={true}
-                  label="Expected profit *"
+                  label="Estimated profit (USD) *"
                   value={this.getRewardValue(true)}
                 />
                 <TextField
                   disabled={true}
-                  label="Monthly profit *"
+                  label="Monthly profit (USD) *"
                   value={this.getMonthlyProfit()}
                 />
-                <p>* All those values only apply for the first reward</p>
+                <p class="text-center">
+                  * Only applies for the first reward, assumed to be 1500 TNT
+                </p>
               </div>
             </LayoutGrid.Cell>
             <LayoutGrid.Cell
