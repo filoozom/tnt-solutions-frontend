@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "tnt-solutions-frontend",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
@@ -17,9 +17,9 @@
     "prettier": "^1.13.7"
   },
   "dependencies": {
-    "linkstate": "^1.1.1",
     "preact": "^8.2.1",
     "preact-material-components": "^1.4.7",
-    "recharts": "^1.0.1"
+    "recharts": "^1.0.1",
+    "unistore": "^3.0.6"
   }
 }

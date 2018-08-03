@@ -1,3 +1,7 @@
 .toolbar-right {
   padding-right: 24px;
 }
+
+.toolbar-right :global .mdc-button:not(:disabled) {
+  color: white;
+}

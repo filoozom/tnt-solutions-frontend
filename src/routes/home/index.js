@@ -1,5 +1,11 @@
+// Dependencies
 import { h, Component } from 'preact'
-import linkState from 'linkstate'
+import { connect } from 'unistore/preact'
+
+// Store
+import { actions } from '../../store'
+
+// Material
 import LayoutGrid from 'preact-material-components/LayoutGrid'
 import Snackbar from 'preact-material-components/Snackbar'
 import TextField from 'preact-material-components/TextField'
@@ -7,6 +13,8 @@ import TextField from 'preact-material-components/TextField'
 import 'preact-material-components/LayoutGrid/style.css'
 import 'preact-material-components/Snackbar/style.css'
 import 'preact-material-components/TextField/style.css'
+
+// Style
 import style from './style'
 
 import {
@@ -19,52 +27,27 @@ import {
   ResponsiveContainer
 } from 'recharts'
 
+@connect(
+  [
+    'activeNodes',
+    'activeNodesData',
+    'currency',
+    'hostingFees',
+    'ownNodes',
+    'prices'
+  ],
+  actions
+)
 export default class Home extends Component {
   leftAxisDimension = [0, 0]
 
   componentDidMount() {
-    this.setState({
-      fees: localStorage.getItem('fees') || 5.0,
-      ownNodes: localStorage.getItem('ownNodes') || 1,
-      nodes: localStorage.getItem('nodes'),
-      tntPrice: localStorage.getItem('tntPrice'),
-      graphData: JSON.parse(localStorage.getItem('graphData') || '[]')
-    })
-
-    fetch('https://api.tnt.solutions/calculator')
-      .then(response => {
-        response.json().then(data => {
-          this.setState({
-            ...data,
-            nodes: this.getCurrentAmountOfNodes(data.graphData)
-          })
-        })
-      })
-      .catch(() => {
-        this.snackBar.MDComponent.show({
-          message:
-            'An error occured while contacting the server. Using cached data if available.'
-        })
-      })
-  }
-
-  setState(data) {
-    for (let element in data) {
-      let value = data[element]
-      if (typeof data[element] === 'object') {
-        value = JSON.stringify(value)
-      }
-      localStorage.setItem(element, value)
-    }
-    super.setState(data)
+    this.props.fetchPrice(this.props.currency)
+    this.props.fetchActiveNodes()
   }
 
   getGraphData() {
-    if (!this.state.graphData) {
-      return []
-    }
-
-    return this.state.graphData.map(value => ({
+    return this.props.activeNodesData.map(value => ({
       ...value,
       reward: this.getRewardDays(value.nodes)
     }))
@@ -83,7 +66,7 @@ export default class Home extends Component {
     }
 
     this.leftAxisDimension = leftAxisDimension
-    super.setState({
+    this.setState({
       rightAxisDomain: [
         this.getRewardDays(this.leftAxisDimension[0]),
         this.getRewardDays(this.leftAxisDimension[1])
@@ -100,7 +83,7 @@ export default class Home extends Component {
   }
 
   getRewardMonths(ceil = false) {
-    let months = (this.getRewardDays(this.state.nodes) / 365) * 12
+    let months = (this.getRewardDays(this.props.activeNodes) / 365) * 12
     return ceil ? Math.ceil(months) : months
   }
 
@@ -116,26 +99,37 @@ export default class Home extends Component {
       .join('/')
   }
 
-  getCurrentAmountOfNodes(graphData) {
-    graphData = graphData || this.state.graphData
-    return graphData[graphData.length - 1].nodes
-  }
-
   getRewardValue(withFees = false) {
-    let price = 1500 * this.state.tntPrice
+    let price = 1500 * this.getPrice()
 
     if (withFees) {
-      price -= this.getRewardMonths(true) * this.state.fees
+      price -= this.getRewardMonths(true) * this.props.hostingFees
     }
 
-    return this.roundPrice(this.state.ownNodes * price)
+    return this.roundPrice(this.props.ownNodes * price)
   }
 
   getMonthlyProfit() {
     return this.roundPrice(this.getRewardValue(true) / this.getRewardMonths())
   }
 
-  render({}, { rightAxisDomain, nodes, fees, tntPrice, ownNodes }) {
+  getPrice() {
+    return this.props.prices[this.props.currency]
+  }
+
+  render(
+    {
+      activeNodes,
+      currency,
+      hostingFees,
+      ownNodes,
+      setActiveNodes,
+      setHostingFees,
+      setOwnNodes,
+      setPrice
+    },
+    { rightAxisDomain }
+  ) {
     return (
       <div class={style.home}>
         <LayoutGrid>
@@ -147,34 +141,34 @@ export default class Home extends Component {
               align="middle"
             >
               <TextField
-                label="TNT price (USD)"
+                label={`TNT price (${currency})`}
                 type="number"
-                step="0.000001"
-                value={tntPrice}
-                onInput={linkState(this, 'tntPrice')}
+                step="0.0000000001"
+                value={this.getPrice()}
+                onInput={event => setPrice(event.target.value)}
               />
               <TextField
                 label="Active nodes"
                 type="number"
                 step="1"
-                value={nodes}
-                onInput={linkState(this, 'nodes')}
+                value={activeNodes}
+                onInput={event => setActiveNodes(event.target.value)}
               />
 
               <div style={{ 'margin-top': '20px' }}>
                 <TextField
-                  label="Hosting fees per month (USD)"
+                  label={`Hosting fees per month (${currency})`}
                   type="number"
                   step="0.01"
-                  value={fees}
-                  onInput={linkState(this, 'fees')}
+                  value={hostingFees}
+                  onInput={event => setHostingFees(event.target.value)}
                 />
                 <TextField
                   label="Your number of nodes"
                   type="number"
                   step="1"
                   value={ownNodes}
-                  onInput={linkState(this, 'ownNodes')}
+                  onInput={event => setOwnNodes(event.target.value)}
                 />
               </div>
 
@@ -182,26 +176,26 @@ export default class Home extends Component {
                 <TextField
                   disabled={true}
                   label="Estimated time to reward *"
-                  value={`${this.getRewardDays(nodes)} days`}
+                  value={`${this.getRewardDays(activeNodes)} days`}
                 />
                 <TextField
                   disabled={true}
-                  label="Node stacking value (USD)"
-                  value={this.roundPrice(ownNodes * 5000 * tntPrice)}
+                  label={`Node stacking value (${currency})`}
+                  value={this.roundPrice(ownNodes * 5000 * this.getPrice())}
                 />
                 <TextField
                   disabled={true}
-                  label="Estimated reward value (USD) *"
+                  label={`Estimated reward value (${currency}) *`}
                   value={this.getRewardValue()}
                 />
                 <TextField
                   disabled={true}
-                  label="Estimated profit (USD) *"
+                  label={`Estimated profit (${currency}) *`}
                   value={this.getRewardValue(true)}
                 />
                 <TextField
                   disabled={true}
-                  label="Monthly profit (USD) *"
+                  label={`Monthly profit (${currency}) *`}
                   value={this.getMonthlyProfit()}
                 />
                 <p class="text-center">
